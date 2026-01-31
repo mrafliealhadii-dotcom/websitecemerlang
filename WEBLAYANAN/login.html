@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - KOMINFO</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body style="background: linear-gradient(to right, #00458E, #00AEEF);">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-brand" onclick="window.location.href='index.html'">
+            <img src="kominfo.jpg">
+            PELAPORAN KOMINFO
+        </div>
+    </nav>
+
+    <!-- LOGIN FORM -->
+    <div class="login-container">
+        <div class="login-box">
+            <h2>Masuk Akun Anda</h2>
+            
+            <div id="alertBox" class="alert">
+                <span id="alertMessage"></span>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Masukkan email Anda" required>
+                    <div class="form-error" id="emailError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Masukkan password Anda" required>
+                    <div class="form-error" id="passwordError"></div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit">Masuk</button>
+                </div>
+            </form>
+
+            <div class="login-links">
+                <p>Belum punya akun? <a href="register.html">Daftar di sini</a></p>
+                <p><a href="index.html">← Kembali ke Beranda</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const alertBox = document.getElementById('alertBox');
+            const alertMessage = document.getElementById('alertMessage');
+
+            // Validasi email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAlert('Masukkan email yang valid!', 'error');
+                return;
+            }
+
+            // Validasi password
+            if (password.length < 6) {
+                showAlert('Password harus minimal 6 karakter!', 'error');
+                return;
+            }
+
+            // Simulasi login (dalam aplikasi real, ini akan menghubungi server)
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => ((u.email || '').toLowerCase() === email.toLowerCase()) && u.password === password);
+
+            if (user) {
+                // Simpan data user yang login (termasuk peran)
+                localStorage.setItem('currentUser', JSON.stringify({
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role || 'user'
+                }));
+                
+                showAlert('Login berhasil! Mengarahkan ke dashboard...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1200);
+            } else {
+                showAlert('Email atau password salah!', 'error');
+            }
+        });
+
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            const alertMessage = document.getElementById('alertMessage');
+            
+            alertBox.className = 'alert show alert-' + type;
+            alertMessage.textContent = message;
+            
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>

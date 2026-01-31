@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - KOMINFO</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3>Dashboard</h3>
+                <p id="userName" style="font-size: 0.9rem; color: #00AEEF; margin-top: 5px;"></p>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li><a href="#dashboard" class="menu-link active" data-page="dashboard">📊 Dashboard</a></li>
+                <li><a href="#all-laporan" class="menu-link" data-page="all-laporan" id="linkAllLaporan" style="display:none;">📂 Semua Laporan</a></li>
+                <li><a href="#laporan" class="menu-link" data-page="laporan">📝 Laporan Saya</a></li>
+                <li><a href="#buat-laporan" class="menu-link" data-page="buat-laporan">➕ Buat Laporan</a></li>
+                <li><a href="#statistik" class="menu-link" data-page="statistik">📈 Statistik</a></li>
+                <li><a href="#profil" class="menu-link" data-page="profil">👤 Profil Saya</a></li>
+                <li><a href="#" id="logoutBtn">🚪 Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            <!-- DASHBOARD PAGE -->
+            <div id="page-dashboard" class="page">
+                <div class="page-header">
+                    <h1>Selamat Datang di Website Pelaporan KOMINFO</h1>
+                    <p>Kelola laporan dan aspirasi Anda di sini</p>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <h3>Total Laporan</h3>
+                        <div class="value" id="totalLaporan">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Sedang Diproses</h3>
+                        <div class="value" id="laporanProses">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Sudah Verifikasi</h3>
+                        <div class="value" id="laporanVerifikasi">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Selesai</h3>
+                        <div class="value" id="laporanSelesai">0</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <h2 style="padding: 20px 20px 0; margin: 0;">Laporan Terbaru</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Judul Laporan</th>
+                                <th>Foto</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="laporanTerbaru">
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: #999;">Belum ada laporan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- LAPORAN SAYA PAGE -->
+            <div id="page-laporan" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>Laporan Saya</h1>
+                    <p>Kelola semua laporan yang telah Anda buat</p>
+                </div>
+                    
+                <div class="table-container">
+                    <table>
+                                <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Pelapor</th>
+                                <th>Judul</th>
+                                <th>Foto</th>
+                                <th>Kategori</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablelaporan">
+                            <tr>
+                                <td colspan="8" style="text-align: center; color: #999;">Belum ada laporan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ALL LAPORAN PAGE (ADMIN) -->
+            <div id="page-all-laporan" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>Semua Laporan</h1>
+                    <p>Daftar lengkap laporan (Admin)</p>
+                    <div style="margin-top:10px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                        <div id="adminFilters">
+                            <button class="filter-btn active" data-status="all" onclick="filterAllLaporan('all')">Semua</button>
+                            <button class="filter-btn" data-status="pending" onclick="filterAllLaporan('pending')">Pending</button>
+                            <button class="filter-btn" data-status="diproses" onclick="filterAllLaporan('diproses')">Diproses</button>
+                            <button class="filter-btn" data-status="verifikasi" onclick="filterAllLaporan('verifikasi')">Terverifikasi</button>
+                            <button class="filter-btn" data-status="selesai" onclick="filterAllLaporan('selesai')">Selesai</button>
+                        </div>
+                        <div class="bulk-actions" style="margin-left:auto; display:flex; gap:8px;">
+                            <button class="btn-submit" onclick="bulkChangeStatus('diproses')">Set Diproses</button>
+                            <button class="btn-submit" onclick="bulkChangeStatus('verifikasi')">Set Verifikasi</button>
+                            <button class="btn-submit" onclick="bulkChangeStatus('selesai')">Set Selesai</button>
+                        
+                        </div>
+                    </div>
+                    <div style="margin-top:10px;">
+                        <button onclick="exportToJSON()" class="btn-submit">Export JSON</button>
+                        <button onclick="clearAllData()" class="btn-submit" style="background:#dc3545; margin-left:10px;">Hapus Semua Data</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAllReports" onclick="toggleSelectAll(this)"></th>
+                                <th>No.</th>
+                                <th>Pelapor</th>
+                                <th>Judul</th>
+                                <th>Foto</th>
+                                <th>Kategori</th>
+                                <th>Tanggal</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="allLaporanTable">
+                            <tr>
+                                <td colspan="9" style="text-align:center;color:#999;">Belum ada laporan</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- BUAT LAPORAN PAGE -->
+            <div id="page-buat-laporan" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>Buat Laporan Baru</h1>
+                    <p>Sampaikan keluhan atau aspirasi Anda dengan jelas dan lengkap</p>
+                </div>
+
+                <div id="alertBox" class="alert">
+                    <span id="alertMessage"></span>
+                </div>
+
+                <div class="form-container">
+                    <form id="formLaporan">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="judul">Judul Laporan *</label>
+                                <input type="text" id="judul" name="judul" placeholder="Ringkas judul laporan Anda" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="kategori">Kategori *</label>
+                                <select id="kategori" name="kategori" style="padding: 12px; border: 2px solid #ddd; border-radius: 6px;" required>
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="infrastruktur">Infrastruktur</option>
+                                    <option value="pelayanan-publik">Pelayanan Publik</option>
+                                    <option value="keamanan">Keamanan</option>
+                                    <option value="lingkungan">Lingkungan</option>
+                                    <option value="lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="lokasi">Lokasi Kejadian *</label>
+                                <input type="text" id="lokasi" name="lokasi" placeholder="Masukkan lokasi detail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="tanggalKejadian">Tanggal Kejadian *</label>
+                                <input type="date" id="tanggalKejadian" name="tanggalKejadian" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label for="deskripsi">Deskripsi Lengkap *</label>
+                                <textarea id="deskripsi" name="deskripsi" placeholder="Jelaskan secara detail tentang laporan Anda..." required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bukti">Lampiran Bukti (URL/Link)</label>
+                                <input type="url" id="bukti" name="bukti" placeholder="Masukkan URL foto atau dokumen pendukung">
+                                <label for="buktiFile" style="margin-top:10px; display:block;">Atau unggah foto bukti</label>
+                                <input type="file" id="buktiFile" accept="image/*">
+                                <img id="buktiPreview" style="max-width:180px; margin-top:10px; display:none; border-radius:8px;" alt="Preview bukti">
+                            </div>
+                            <div class="form-group">
+                                <label for="kontak">Nomor Kontak Anda *</label>
+                                <input type="tel" id="kontak" name="kontak" placeholder="Nomor telepon untuk konfirmasi" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">Kirim Laporan</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- STATISTIK PAGE -->
+            <div id="page-statistik" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>Statistik Laporan</h1>
+                    <p>Analisis laporan Anda</p>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <h3>Laporan Pending</h3>
+                        <div class="value" id="statPending">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Laporan Diproses</h3>
+                        <div class="value" id="statProses">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Laporan Verifikasi</h3>
+                        <div class="value" id="statVerifikasi">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Laporan Selesai</h3>
+                        <div class="value" id="statSelesai">0</div>
+                    </div>
+                </div>
+
+                <div class="form-container" style="margin-top: 30px;">
+                    <h2>Laporan Berdasarkan Kategori</h2>
+                    <div id="kategoriStats"></div>
+                </div>
+            </div>
+
+            <!-- PROFIL PAGE -->
+            <div id="page-profil" class="page" style="display: none;">
+                <div class="page-header">
+                    <h1>Profil Saya</h1>
+                    <p>Kelola informasi profil Anda</p>
+                </div>
+
+                <div id="alertBoxProfile" class="alert">
+                    <span id="alertMessageProfile"></span>
+                </div>
+
+                <div class="form-container">
+                    <form id="formProfil">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profilNama">Nama Lengkap</label>
+                                <input type="text" id="profilNama" name="profilNama" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="profilEmail">Email</label>
+                                <input type="email" id="profilEmail" name="profilEmail" readonly style="background: #f0f0f0;">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profilPhone">Nomor Telepon</label>
+                                <input type="tel" id="profilPhone" name="profilPhone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="profilAlamat">Alamat</label>
+                                <input type="text" id="profilAlamat" name="profilAlamat" placeholder="Alamat lengkap Anda">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">Simpan Perubahan</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Cek login
+        window.addEventListener('DOMContentLoaded', function() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Tampilkan nama user
+            document.getElementById('userName').textContent = currentUser.name;
+
+            // Jika admin, tampilkan fitur admin dan sesuaikan menu
+            if (currentUser.role === 'admin') {
+                const link = document.getElementById('linkAllLaporan');
+                if (link) link.style.display = 'block';
+
+                // Sembunyikan fitur buat laporan untuk admin
+                const createLink = document.querySelector('[data-page="buat-laporan"]');
+                if (createLink) createLink.style.display = 'none';
+            }
+
+            // Setup menu navigation
+            setupNavigation();
+
+            // Pilih halaman default berdasarkan role
+            if (currentUser.role === 'admin') {
+                const adminLink = document.querySelector('[data-page="all-laporan"]');
+                if (adminLink) adminLink.click();
+            } else {
+                const defaultLink = document.querySelector('[data-page="dashboard"]');
+                if (defaultLink) defaultLink.click();
+            }
+
+            // Load data
+            loadDashboard();
+            loadUserProfile();
+        });
+
+        function setupNavigation() {
+            const menuLinks = document.querySelectorAll('.menu-link');
+            
+            menuLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class
+                    menuLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Hide all pages
+                    document.querySelectorAll('.page').forEach(page => {
+                        page.style.display = 'none';
+                    });
+                    
+                    // Show selected page
+                    const pageId = 'page-' + this.getAttribute('data-page');
+                    document.getElementById(pageId).style.display = 'block';
+                });
+            });
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Apakah Anda yakin ingin logout?')) {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+
+        function loadDashboard() {
+            const laporan = JSON.parse(localStorage.getItem('laporan')) || [];
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            let filtered = laporan;
+            if (currentUser.role !== 'admin') {
+                filtered = laporan.filter(l => l.userId === currentUser.id);
+            }
+
+            // Update stats
+            document.getElementById('totalLaporan').textContent = filtered.length;
+            document.getElementById('laporanProses').textContent = filtered.filter(l => l.status === 'diproses').length;
+            document.getElementById('laporanVerifikasi').textContent = filtered.filter(l => l.status === 'verifikasi').length;
+            document.getElementById('laporanSelesai').textContent = filtered.filter(l => l.status === 'selesai').length;
+
+            // Update recent reports
+            const tbody = document.getElementById('laporanTerbaru');
+            if (filtered.length > 0) {
+                tbody.innerHTML = filtered.slice(-5).reverse().map((l, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${l.judul}</td>
+                        <td>${l.bukti ? `<img src="${l.bukti}" class="img-thumb">` : '-'}</td>
+                        <td>${new Date(l.tanggal).toLocaleDateString('id-ID')}</td>
+                        <td><span class="badge badge-${l.status}">${getStatusLabel(l.status)}</span></td>
+                        <td><button class="btn-small" onclick="viewReport(${l.id})">Lihat</button></td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">Belum ada laporan</td></tr>';
+            }
+
+            // Load laporan ke table laporan saya
+            loadLaporanSaya();
+        }
+
+        function viewReport(id) {
+            const laporan = JSON.parse(localStorage.getItem('laporan')) || [];
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const l = laporan.find(x => x.id === id);
+            if (!l) return alert('Laporan tidak ditemukan');
+            const user = users.find(u => u.id === l.userId);
+            const html = `
+                <!doctype html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>Detail Laporan</title>
+                    <style>body{font-family:Segoe UI,Arial;padding:20px;} img{max-width:100%;height:auto;border-radius:8px;margin-top:10px;}</style>
+                </head>
+                <body>
+                    <h2>${l.judul}</h2>
+                    <p><strong>Pelapor:</strong> ${user ? user.name : 'Unknown'} (${l.kontak || '-'})</p>
+                    <p><strong>Tanggal:</strong> ${new Date(l.tanggal).toLocaleString('id-ID')}</p>
+                    <p><strong>Kategori:</strong> ${l.kategori}</p>
+                    <p><strong>Lokasi:</strong> ${l.lokasi || '-'}</p>
+                    <p><strong>Deskripsi:</strong><br>${(l.deskripsi || '').replace(/\n/g,'<br>')}</p>
+                    ${l.bukti ? `<p><strong>Bukti:</strong><br><img src="${l.bukti}" alt="Bukti"></p>` : ''}
+                    <p><strong>Status:</strong> ${getStatusLabel(l.status)}</p>
+                </body>
+                </html>
+            `;
+            const w = window.open('', '_blank', 'width=700,height=600');
+            w.document.write(html);
+            w.document.close();
+        }
+
+        function loadLaporanSaya() {
+            const laporan = JSON.parse(localStorage.getItem('laporan')) || [];
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            let userLaporan = laporan;
+            let isAdmin = (currentUser.role === 'admin');
+            if (!isAdmin) {
+                userLaporan = laporan.filter(l => l.userId === currentUser.id);
+            }
+
+            const tbody = document.getElementById('tablelaporan');
+            if (userLaporan.length > 0) {
+                tbody.innerHTML = userLaporan.slice().reverse().map((l, index) => {
+                    const user = users.find(u => u.id === l.userId);
+                    const name = user ? user.name : '-';
+                    return `
+                        <tr>
+                            <td>${index + 1}</td>
+                            <td>${isAdmin ? name : ''}</td>
+                            <td>${l.judul}</td>
+                            <td>${l.bukti ? `<img src="${l.bukti}" class="img-thumb">` : ''}</td>
+                            <td>${l.kategori}</td>
+                            <td>${new Date(l.tanggal).toLocaleDateString('id-ID')}</td>
+                            <td><span class="badge badge-${l.status}">${getStatusLabel(l.status)}</span></td>
+                            <td><button class="btn-small" onclick="viewReport(${l.id})">Detail</button></td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#999;">Belum ada laporan</td></tr>';
+            }
+        }
+
+        // ADMIN: load semua laporan untuk admin (dapat difilter)
+        function loadAllLaporan(statusFilter = 'all') {
+            // simpan filter aktif
+            window.adminFilterStatus = statusFilter || 'all';
+            const laporan = JSON.parse(localStorage.getItem('laporan')) || [];
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            let filtered = laporan.slice();
+            if (statusFilter && statusFilter !== 'all') filtered = filtered.filter(l => l.status === statusFilter);
+
+            const tbody = document.getElementById('allLaporanTable');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#999;">Belum ada laporan</td></tr>';
+                const selectAll = document.getElementById('selectAllReports'); if (selectAll) selectAll.checked = false;
+                const buttons = document.querySelectorAll('#adminFilters .filter-btn'); buttons.forEach(b => b.classList.remove('active')); const activeBtn = document.querySelector(`#adminFilters .filter-btn[data-status="${statusFilter}"]`); if (activeBtn) activeBtn.classList.add('active');
+                return;
+            }
+
+            tbody.innerHTML = filtered.slice().reverse().map((l, index) => {
+                const user = users.find(u => u.id === l.userId);
+                const name = user ? user.name : 'Unknown';
+                return `
+                    <tr>
+                        <td><input type="checkbox" class="report-select" data-id="${l.id}"></td>
+                        <td>${index + 1}</td>
+                        <td>${name}</td>
+                        <td>${l.judul}</td>
+                        <td>${l.bukti ? `<img src="${l.bukti}" class="img-thumb">` : '-'}</td>
+                        <td>${l.kategori}</td>
+                        <td>${new Date(l.tanggal).toLocaleDateString('id-ID')}</td>
+                        <td><span class="badge badge-${l.status}">${getStatusLabel(l.status)}</span></td>
+                        <td>
+                            <button class="btn-small" onclick="changeStatus(${l.id}, 'diproses')">Diproses</button>
+                            <button class="btn-small" onclick="changeStatus(${l.id}, 'verifikasi')">Verifikasi</button>
+                            <button class="btn-small" onclick="changeStatus(${l.id}, 'selesai')">Selesai</button>
+                            <button class="btn-small" style="background:#dc3545;color:white;" onclick="deleteReport(${l.id})">Hapus</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Reset selectAll
+            const selectAll = document.getElementById('selectAllReports'); if (selectAll) selectAll.checked = false;
+
+            // Update active filter button styles
+            const buttons = document.querySelectorAll('#adminFilters .filter-btn'); buttons.forEach(b => b.classList.remove('active'));
+            const activeBtn = document.querySelector(`#adminFilters .filter-btn[data-status="${statusFilter}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        function changeStatus(id, status) {
+            const laporan = JSON.parse(localStorage.getItem('laporan')) || [];
+            const idx = laporan.findIndex(l => l.id === id);
+            if (idx !== -1) {
+                laporan[idx].status = status;
+                localStorage.setItem('laporan', JSON.stringify(laporan));
+                showAlert('Status laporan diperbarui', 'success', 'alertBox');
+                loadAllLaporan(window.adminFilterStatus || 'all');
+                loadDashboard();
+                loadLaporanSaya();
+            }
+        }
+
+        function deleteReport(id) {
+            if (!confirm('Hapus laporan ini?')) return;
+            let laporan = JSON.parse(localStorage.getItem('laporan')) || [];
+            laporan = laporan.filter(l => l.id !== id);
+            localStorage.setItem('laporan', JSON.stringify(laporan));
+            showAlert('Laporan dihapus', 'success', 'alertBox');
+            loadAllLaporan(window.adminFilterStatus || 'all');
+            loadDashboard();
+            loadLaporanSaya();
+        }
+
+        function filterAllLaporan(status) {
+            loadAllLaporan(status);
+        }
+
+        function getSelectedReportIds() {
+            const inputs = document.querySelectorAll('.report-select:checked');
+            return Array.from(inputs).map(i => Number(i.getAttribute('data-id')));
+        }
+
+        function bulkChangeStatus(status) {
+            const ids = getSelectedReportIds();
+            if (ids.length === 0) { alert('Pilih laporan terlebih dahulu.'); return; }
+            const laporan = JSON.parse(localStorage.getItem('laporan')) || [];
+            laporan.forEach(l => {
+                if (ids.includes(l.id)) l.status = status;
+            });
+            localStorage.setItem('laporan', JSON.stringify(laporan));
+            showAlert('Status laporan terpilih diperbarui', 'success', 'alertBox');
+            loadAllLaporan(window.adminFilterStatus || 'all');
+            loadDashboard();
+            loadLaporanSaya();
+        }
+
+        function bulkDeleteSelected() {
+            const ids = getSelectedReportIds();
+            if (ids.length === 0) { alert('Pilih laporan terlebih dahulu.'); return; }
+            if (!confirm('Hapus laporan terpilih?')) return;
+            let laporan = JSON.parse(localStorage.getItem('laporan')) || [];
+            laporan = laporan.filter(l => !ids.includes(l.id));
+            localStorage.setItem('laporan', JSON.stringify(laporan));
+            showAlert('Laporan terpilih dihapus', 'success', 'alertBox');
+            loadAllLaporan(window.adminFilterStatus || 'all');
+            loadDashboard();
+            loadLaporanSaya();
+        }
+
+        function toggleSelectAll(el) {
+            const checked = el.checked;
+            const inputs = document.querySelectorAll('.report-select');
+            inputs.forEach(i => i.checked = checked);
+        }
+
+        // Proteksi view untuk masyarakat agar tidak melihat laporan orang lain
+        function viewReport(id) {
+            const laporan = JSON.parse(localStorage.getItem('laporan')) || [];
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const l = laporan.find(x => x.id === id);
+            if (!l) return alert('Laporan tidak ditemukan');
+            if (currentUser.role !== 'admin' && l.userId !== currentUser.id) return alert('Anda tidak memiliki izin untuk melihat laporan ini.');
+            const user = users.find(u => u.id === l.userId);
+            const html = `
+                <!doctype html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>Detail Laporan</title>
+                    <style>body{font-family:Segoe UI,Arial;padding:20px;} img{max-width:100%;height:auto;border-radius:8px;margin-top:10px;}</style>
+                </head>
+                <body>
+                    <h2>${l.judul}</h2>
+                    <p><strong>Pelapor:</strong> ${user ? user.name : 'Unknown'} (${l.kontak || '-'})</p>
+                    <p><strong>Tanggal:</strong> ${new Date(l.tanggal).toLocaleString('id-ID')}</p>
+                    <p><strong>Kategori:</strong> ${l.kategori}</p>
+                    <p><strong>Lokasi:</strong> ${l.lokasi || '-'}</p>
+                    <p><strong>Deskripsi:</strong><br>${(l.deskripsi || '').replace(/\n/g,'<br>')}</p>
+                    ${l.bukti ? `<p><strong>Bukti:</strong><br><img src="${l.bukti}" alt="Bukti"></p>` : ''}
+                    <p><strong>Status:</strong> ${getStatusLabel(l.status)}</p>
+                </body>
+                </html>
+            `;
+            const w = window.open('', '_blank', 'width=700,height=600');
+            w.document.write(html);
+            w.document.close();
+        }
+
+        function loadUserProfile() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.id === currentUser.id);
+
+            if (user) {
+                document.getElementById('profilNama').value = user.name;
+                document.getElementById('profilEmail').value = user.email;
+                document.getElementById('profilPhone').value = user.phone;
+                document.getElementById('profilAlamat').value = user.alamat || '';
+            }
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                'pending': 'Pending',
+                'diproses': 'Diproses',
+                'verifikasi': 'Terverifikasi',
+                'selesai': 'Selesai'
+            };
+            return labels[status] || status;
+        }
+
+        function showAlert(message, type, elementId = 'alertBox') {
+            const alertBox = document.getElementById(elementId);
+            const alertMessage = document.getElementById(elementId.replace('Box', 'Message'));
+            
+            alertBox.className = 'alert show alert-' + type;
+            alertMessage.textContent = message;
+            
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+            }, 4000);
+        }
+
+        // Form Laporan (dengan dukungan upload foto)
+        document.getElementById('formLaporan').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const laporan = JSON.parse(localStorage.getItem('laporan')) || [];
+            const urlBukti = document.getElementById('bukti').value;
+            const fileInput = document.getElementById('buktiFile');
+            const file = fileInput.files[0];
+            const self = this;
+
+            function saveReport(buktiData) {
+                const newLaporan = {
+                    id: Date.now(),
+                    userId: currentUser.id,
+                    judul: document.getElementById('judul').value,
+                    kategori: document.getElementById('kategori').value,
+                    lokasi: document.getElementById('lokasi').value,
+                    tanggalKejadian: document.getElementById('tanggalKejadian').value,
+                    deskripsi: document.getElementById('deskripsi').value,
+                    bukti: buktiData || urlBukti || '',
+                    kontak: document.getElementById('kontak').value,
+                    tanggal: new Date().toISOString(),
+                    status: 'pending'
+                };
+
+                laporan.push(newLaporan);
+                localStorage.setItem('laporan', JSON.stringify(laporan));
+
+                showAlert('Laporan berhasil dikirim! Terima kasih atas aspirasi Anda.', 'success');
+                
+                // Reset form & preview
+                self.reset();
+                const preview = document.getElementById('buktiPreview');
+                if (preview) preview.style.display = 'none';
+
+                // Update dashboard
+                loadDashboard();
+                if (currentUser.role === 'admin') loadAllLaporan();
+
+                // Redirect to dashboard
+                setTimeout(() => {
+                    document.querySelector('[data-page="dashboard"]').click();
+                }, 1200);
+            }
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    saveReport(evt.target.result);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                saveReport(urlBukti || '');
+            }
+        });
+
+        // Preview uploaded image
+        const buktiFileEl = document.getElementById('buktiFile');
+        if (buktiFileEl) {
+            buktiFileEl.addEventListener('change', function(e) {
+                const file = this.files[0];
+                const preview = document.getElementById('buktiPreview');
+                if (!preview) return;
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        preview.src = evt.target.result;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
+        }
+
+        // Form Profil
+        document.getElementById('formProfil').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const userIndex = users.findIndex(u => u.id === currentUser.id);
+
+            if (userIndex !== -1) {
+                users[userIndex].name = document.getElementById('profilNama').value;
+                users[userIndex].phone = document.getElementById('profilPhone').value;
+                users[userIndex].alamat = document.getElementById('profilAlamat').value;
+
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // Update current user
+                currentUser.name = users[userIndex].name;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                document.getElementById('userName').textContent = currentUser.name;
+
+                showAlert('Profil berhasil diperbarui!', 'success', 'alertBoxProfile');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar - KOMINFO</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body style="background: linear-gradient(to right, #00458E, #00AEEF);">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-brand" onclick="window.location.href='index.html'">
+            <img src="https://via.placeholder.com/35" alt="KOMINFO">
+            PELAPORAN KOMINFO
+        </div>
+    </nav>
+
+    <!-- REGISTER FORM -->
+    <div class="login-container">
+        <div class="login-box">
+            <h2>Buat Akun Baru</h2>
+            
+            <div id="alertBox" class="alert">
+                <span id="alertMessage"></span>
+            </div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="name">Nama Lengkap</label>
+                    <input type="text" id="name" name="name" placeholder="Masukkan nama lengkap" required>
+                    <div class="form-error" id="nameError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Masukkan email Anda" required>
+                    <div class="form-error" id="emailError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Nomor Telepon</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Masukkan nomor telepon" required>
+                    <div class="form-error" id="phoneError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Minimal 6 karakter" required>
+                    <div class="form-error" id="passwordError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Konfirmasi Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Ketik ulang password" required>
+                    <div class="form-error" id="confirmPasswordError"></div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit">Daftar</button>
+                </div>
+            </form>
+
+            <div class="login-links">
+                <p>Sudah punya akun? <a href="login.html">Masuk di sini</a></p>
+                <p><a href="index.html">← Kembali ke Beranda</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validasi nama
+            if (name.length < 3) {
+                showAlert('Nama harus minimal 3 karakter!', 'error');
+                return;
+            }
+
+            // Validasi email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showAlert('Masukkan email yang valid!', 'error');
+                return;
+            }
+
+            // Validasi nomor telepon
+            if (phone.length < 10) {
+                showAlert('Nomor telepon harus minimal 10 digit!', 'error');
+                return;
+            }
+
+            // Validasi password
+            if (password.length < 6) {
+                showAlert('Password harus minimal 6 karakter!', 'error');
+                return;
+            }
+
+            // Validasi password match
+            if (password !== confirmPassword) {
+                showAlert('Password tidak cocok!', 'error');
+                return;
+            }
+
+            // Cek apakah email sudah terdaftar
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            if (users.some(u => u.email === email)) {
+                showAlert('Email ini sudah terdaftar!', 'error');
+                return;
+            }
+
+            // Simpan user baru
+            const newUser = {
+                id: Date.now(),
+                name: name,
+                email: email,
+                phone: phone,
+                password: password,
+                role: 'user'
+            };
+
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+
+            showAlert('Pendaftaran berhasil! Silakan login...', 'success');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 2000);
+        });
+
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            const alertMessage = document.getElementById('alertMessage');
+            
+            alertBox.className = 'alert show alert-' + type;
+            alertMessage.textContent = message;
+            
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
